@@ -10,16 +10,18 @@ import adminRoutes from "./routes/adminRoutes.js";
 dotenv.config();
 
 const app = express();
+
+/* =======================
+   ALLOWED ORIGINS
+======================= */
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:5500",
   "http://127.0.0.1:5500",
   "http://127.0.0.1:5502",
   "http://localhost:5502",
-  process.env.CLIENT_URL,
-  "https://your-frontend-domain.netlify.app" // add later
+  "https://victoriafalls-transporters.netlify.app"
 ];
-
 
 /* =======================
    MIDDLEWARE
@@ -34,14 +36,9 @@ app.use(cors({
   },
   credentials: true
 }));
+
 app.use(express.json({ limit: "10kb" }));
 app.use(helmet());
-app.use((err, req, res, next) => {
-  if (err.message === "Not allowed by CORS") {
-    return res.status(403).json({ message: "CORS blocked" });
-  }
-  next(err);
-});
 
 /* =======================
    DATABASE
@@ -64,12 +61,10 @@ app.get("/", (req, res) => {
   res.send("Server is running");
 });
 
-
-
 /* =======================
    START SERVER
 ======================= */
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
