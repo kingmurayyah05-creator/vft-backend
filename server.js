@@ -36,6 +36,12 @@ app.use(cors({
 }));
 app.use(express.json({ limit: "10kb" }));
 app.use(helmet());
+app.use((err, req, res, next) => {
+  if (err.message === "Not allowed by CORS") {
+    return res.status(403).json({ message: "CORS blocked" });
+  }
+  next(err);
+});
 
 /* =======================
    DATABASE
@@ -63,7 +69,7 @@ app.get("/", (req, res) => {
 /* =======================
    START SERVER
 ======================= */
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
