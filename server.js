@@ -1,6 +1,6 @@
-import helmet from "helmet";
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 
@@ -24,21 +24,37 @@ const allowedOrigins = [
 ];
 
 /* =======================
-   MIDDLEWARE
+   CORS (FIXED)
 ======================= */
 app.use(cors({
   origin: function (origin, callback) {
+    console.log("🌐 CORS origin:", origin);
+
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
     }
   },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
 
+// ✅ VERY IMPORTANT — allow preflight
+app.options("*", cors());
+
+/* =======================
+   BODY PARSER
+======================= */
 app.use(express.json({ limit: "10kb" }));
-app.use(helmet());
+
+/* =======================
+   SECURITY (after CORS)
+======================= */
+app.use(helmet({
+  crossOriginResourcePolicy: false
+}));
 
 /* =======================
    DATABASE
