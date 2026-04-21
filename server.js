@@ -1,6 +1,6 @@
+import helmet from "helmet";
 import express from "express";
 import cors from "cors";
-import helmet from "helmet";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 
@@ -12,24 +12,23 @@ dotenv.config();
 const app = express();
 
 /* =======================
-   CORS — RENDER SAFE
+   CORS (FINAL & CORRECT)
 ======================= */
 app.use(cors({
-  origin: "*",
+  origin: "https://victoriafalls-transporters.netlify.app",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: false
 }));
 
+// 👇 THIS LINE IS CRITICAL
 app.options("*", cors());
 
 /* =======================
    MIDDLEWARE
 ======================= */
 app.use(express.json({ limit: "10kb" }));
-
-app.use(helmet({
-  crossOriginResourcePolicy: false
-}));
+app.use(helmet());
 
 /* =======================
    DATABASE
@@ -46,7 +45,7 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/admin", adminRoutes);
 
 /* =======================
-   TEST
+   TEST ROUTE
 ======================= */
 app.get("/", (req, res) => {
   res.send("Server is running");

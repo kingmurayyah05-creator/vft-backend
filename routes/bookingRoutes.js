@@ -3,7 +3,8 @@ import Booking from "../models/Booking.js";
 import { generateBookingRef } from "../utils/generateBookingRef.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import sendReceiptEmail  from "../utils/sendReceiptEmail.js";
-
+import generateReceipt from "../utils/generateReceipt.js";
+import sendEmail from "../utils/sendEmail.js";
 const router = express.Router();
 
 /**
