@@ -12,46 +12,21 @@ dotenv.config();
 const app = express();
 
 /* =======================
-   ALLOWED ORIGINS
-======================= */
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://localhost:5500",
-  "http://127.0.0.1:5500",
-  "http://127.0.0.1:5502",
-  "http://localhost:5502",
-  "https://victoriafalls-transporters.netlify.app"
-];
-
-/* =======================
-   CORS (FIXED)
+   CORS — RENDER SAFE
 ======================= */
 app.use(cors({
-  origin: function (origin, callback) {
-    console.log("🌐 CORS origin:", origin);
-
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
 }));
 
-// ✅ VERY IMPORTANT — allow preflight
 app.options("*", cors());
 
 /* =======================
-   BODY PARSER
+   MIDDLEWARE
 ======================= */
 app.use(express.json({ limit: "10kb" }));
 
-/* =======================
-   SECURITY (after CORS)
-======================= */
 app.use(helmet({
   crossOriginResourcePolicy: false
 }));
@@ -71,7 +46,7 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/admin", adminRoutes);
 
 /* =======================
-   TEST ROUTE
+   TEST
 ======================= */
 app.get("/", (req, res) => {
   res.send("Server is running");
