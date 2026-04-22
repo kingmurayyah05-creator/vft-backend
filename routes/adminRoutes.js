@@ -46,6 +46,7 @@ router.post("/login", async (req, res) => {
 
 /* =========================
    ONE-TIME ADMIN SETUP
+   (MAX 3 ADMINS TOTAL)
 ========================= */
 router.post("/setup", async (req, res) => {
   try {
@@ -58,24 +59,46 @@ router.post("/setup", async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
+    // 🔢 Count existing admins
     const adminCount = await Admin.countDocuments();
     console.log("ADMIN COUNT:", adminCount);
 
-   // if (adminCount > 0) {
-    //  return res.status(403).json({ message: "Admin already exists" });
-   // }
+    // 🔐 Allow ONLY 3 admins total
+    if (adminCount >= 3) {
+      return res.status(403).json({
+        message: "Admin limit reached. No more admins can be created."
+      });
+    }
 
+    // 🚫 Prevent duplicate email or username
+    const existingAdmin = await Admin.findOne({
+      $or: [
+        { email: email.toLowerCase().trim() },
+        { username: username.trim() }
+      ]
+    });
+
+    if (existingAdmin) {
+      return res.status(409).json({
+        message: "Admin with this email or username already exists"
+      });
+    }
+
+    // 🔐 Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    // ✅ Create admin
     const admin = await Admin.create({
       username: username.trim(),
       email: email.toLowerCase().trim(),
       password: hashedPassword
     });
 
-    console.log("✅ ADMIN CREATED:", admin);
+    console.log("✅ ADMIN CREATED:", admin.username);
 
-    res.json({ message: "Admin created successfully" });
+    res.json({
+      message: `Admin created successfully (${adminCount + 1}/3)`
+    });
 
   } catch (err) {
     console.error("❌ SETUP ERROR:", err);
