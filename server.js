@@ -19,10 +19,7 @@ const app = express();
 ======================= */
 const allowedOrigins = [
   "https://victoriafalls-transporters.netlify.app",
-  "https://vft-admin.netlify.app",
-  "http://localhost:3000",
-  "http://127.0.0.1:5502",
-  "http://localhost:5502"
+  "https://vft-admin.netlify.app"
 ];
 
 app.use(cors({
@@ -30,15 +27,9 @@ app.use(cors({
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("Blocked by CORS: " + origin));
+      callback(new Error("CORS blocked: " + origin));
     }
   },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
-
-app.use(cors({
-  origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));

@@ -7,45 +7,21 @@ import Booking from "../models/Booking.js";
 
 const router = express.Router();
 
+router.get("/test", (req, res) => {
+  res.json({ message: "ADMIN ROUTES WORKING" });
+});
+
 /* =========================
    ADMIN LOGIN
 ========================= */
-router.post("/login", async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
+router.post("/login", (req, res) => {
+  console.log("LOGIN ROUTE HIT");
+  console.log(req.body);
 
-    if (!password || (!username && !email)) {
-      return res.status(400).json({ message: "Missing credentials" });
-    }
-
-    const admin = await Admin.findOne({
-      $or: [
-        { username: username?.trim() },
-        { email: email?.toLowerCase().trim() }
-      ]
-    });
-
-    if (!admin) {
-      return res.status(401).json({ message: "Admin not found" });
-    }
-
-    const isMatch = await bcrypt.compare(password, admin.password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid password" });
-    }
-
-    const token = jwt.sign(
-      { id: admin._id, role: "admin" },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
-
-    res.json({ token });
-
-  } catch (err) {
-    console.error("LOGIN ERROR:", err);
-    res.status(500).json({ message: "Server error" });
-  }
+  return res.json({
+    success: true,
+    message: "LOGIN ROUTE RESPONDED"
+  });
 });
 
 /* =========================
