@@ -12,32 +12,36 @@ const router = express.Router();
 ========================= */
 router.post("/login", async (req, res) => {
   try {
-    let { username, email, password } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!username || !email || !password) {
-      return res.status(400).json({ message: "All fields required" });
+    if (!password || (!username && !email)) {
+      return res.status(400).json({ message: "Missing credentials" });
     }
 
-    email = email.toLowerCase().trim();
-    username = username.trim();
+    const admin = await Admin.findOne({
+      $or: [
+        { username: username?.trim() },
+        { email: email?.toLowerCase().trim() }
+      ]
+    });
 
-    const admin = await Admin.findOne({ username, email });
     if (!admin) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Admin not found" });
     }
 
     const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Invalid password" });
     }
 
     const token = jwt.sign(
-      { adminId: admin._id },
+      { id: admin._id, role: "admin" },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
     res.json({ token });
+
   } catch (err) {
     console.error("LOGIN ERROR:", err);
     res.status(500).json({ message: "Server error" });
