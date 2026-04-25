@@ -17,22 +17,27 @@ const app = express();
 /* =======================
    CORS
 ======================= */
+
 const allowedOrigins = [
   "https://victoriafalls-transporters.netlify.app",
-  "https://vft-admin.netlify.app"
+  "https://vftamdinusersonly.netlify.app",   // <-- your admin Netlify URL
+  "http://127.0.0.1:5500",
+  "http://localhost:5500"
 ];
 
 app.use(cors({
-  origin: (origin, callback) => {
+  origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("CORS blocked: " + origin));
+      callback(new Error("Not allowed by CORS"));
     }
   },
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
+app.options("*", cors());
 
 /* =======================
    MIDDLEWARE
