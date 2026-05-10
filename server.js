@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 
 import bookingRoutes from "./routes/bookingRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import enquiryRoutes from "./routes/enquiryRoutes.js";
 
 dotenv.config();
 
@@ -45,6 +46,7 @@ app.options("*", cors());
 app.use(express.json({ limit: "10kb" }));
 app.use(helmet());
 
+
 /* =======================
    DATABASE
 ======================= */
@@ -58,6 +60,7 @@ mongoose
 ======================= */
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/enquiries", enquiryRoutes);
 
 /* =======================
    TEST
